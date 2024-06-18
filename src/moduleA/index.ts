@@ -1,4 +1,4 @@
 export {ModuleProvider} from './provider'
-export {ModuleComponent}  from './components'
+export * from './components'
 export {isOdd} from './utils'
-export {useIsEnabled} from './hooks'
+export {useIsEnabled, useReset} from './hooks'

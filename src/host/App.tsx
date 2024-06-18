@@ -7,8 +7,10 @@ import { ExampleScreen } from './ExampleScreen';
 function App() {
   return (
     <div className="App">
-    <ModuleProvider eventManager={eventManager}/>
-    <ExampleScreen eventManager={eventManager}/>
+      <ModuleProvider eventManager={eventManager} id="module1" />
+      <ExampleScreen id="module1" />
+      <ModuleProvider eventManager={eventManager} id="module2" />
+      <ExampleScreen id="module2" />
    </div>
   );
 }

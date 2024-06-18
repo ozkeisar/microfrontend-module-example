@@ -1,12 +1,7 @@
 // events.ts
 import mitt from 'mitt';
+import { Events } from '../types';
 
-
-//from types package 
-type Events = {
-    updateEnable: {num: number};
-};
-  
 
 // Create an event emitter instance
 export const eventManager = mitt<Events>();

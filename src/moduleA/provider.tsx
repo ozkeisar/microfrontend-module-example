@@ -1,24 +1,24 @@
 import { useEffect } from "react"
 import { Emitter } from 'mitt'
 import { useModuleStore } from "./store";
-import {isOdd} from './utils'
 import { instance } from './network'
+import { Events } from "../types";
 
-//from types package 
-type Events = {
-    updateEnable: {num: number};
-};
-  
-export const ModuleProvider = ({eventManager}: {eventManager: Emitter<Events>})=>{
-    const {disable, enable} = useModuleStore()
+
+type ProviderProps = {
+    eventManager: Emitter<Events>,
+    id: string,
+}
+export const ModuleProvider = ({id, eventManager}: ProviderProps)=>{
+    const { disable, enable } = useModuleStore(id);
 
     useEffect(()=>{
-        eventManager.on('updateEnable', ({num}: {num: number}) => {
+        eventManager.on('updateEnable', ({isEnabled}) => {
             // Handle events
-            if(isOdd(num)){
-                disable()
-            }else{
+            if(isEnabled){
                 enable()
+            }else{
+                disable()
             }
           });
       
@@ -32,7 +32,6 @@ export const ModuleProvider = ({eventManager}: {eventManager: Emitter<Events>})=
             console.log(res)
         })
     },[])
-
 
 
     return null;

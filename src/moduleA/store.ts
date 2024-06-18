@@ -1,39 +1,58 @@
-import { create } from 'zustand'
-import {produce} from 'immer';
+import { create } from 'zustand';
+import { produce } from 'immer';
 
-export type ModuleStateFuncs = {
-  reset: ()=> void;
-  disable: () => void;
-  enable: ()=> void;
-}
+type ModuleStateFuncs = {
+    reset: () => void;
+    disable: () => void;
+    enable: () => void;
+    setValue: (value: string)=> void;
+};
 
-export type ModuleStateProps = {
-  isEnabled: boolean;
-}
+type ModuleStateProps = {
+    isEnabled: boolean;
+    value: string;
+};
 
-export type ModuleState = ModuleStateFuncs & ModuleStateProps
+type ModuleState = ModuleStateFuncs & ModuleStateProps;
 
+const createModuleStore = (id: string) => {
+    const INIT_STATE: ModuleStateProps = {
+        isEnabled: true,
+        value: ''
+    };
 
-const INIT_STATE: ModuleStateProps = {
-  isEnabled: true
-}
+    return create<ModuleState>((set) => ({
+        ...INIT_STATE,
+        reset: () => set({ ...INIT_STATE }),
+        disable: () => {
+            set(
+                produce<ModuleState>((state: ModuleState) => {
+                    state.isEnabled = false;
+                }),
+            );
+        },
+        enable: () => {
+            set(
+                produce<ModuleState>((state: ModuleState) => {
+                    state.isEnabled = true;
+                }),
+            );
+        },
+        setValue: (value) => {
+            set(
+                produce<ModuleState>((state: ModuleState) => {
+                    state.value = value;
+                }),
+            );
+        },
+    }));
+};
 
+const stores: { [key: string]: ReturnType<typeof createModuleStore> } = {};
 
-export const useModuleStore = create<ModuleState>((set) => ({
-    ...INIT_STATE,
-    reset: () => set({ ...INIT_STATE }),
-    disable: ()=>{
-        set(
-            produce<ModuleState>((state: ModuleState) => {
-              state.isEnabled = false
-            }),
-          );
-    },
-    enable: ()=>{
-        set(
-            produce<ModuleState>((state: ModuleState) => {
-              state.isEnabled = true
-            }),
-          );
-    },
-}));
+export const useModuleStore = (id: string) => {
+    if (!stores[id]) {
+        stores[id] = createModuleStore(id);
+    }
+    return stores[id]();
+};

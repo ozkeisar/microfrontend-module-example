@@ -1,24 +1,15 @@
-import { Emitter } from 'mitt'
-import { useState } from 'react'
-import { ModuleComponent } from './../moduleA'
-
-//from types package 
-type Events = {
-    updateEnable: {num: number};
-};
+import { ModuleComponentInput, isOdd, useReset } from './../moduleA'
+import { eventManager } from './eventManager';
 
 function isNumber(value: string): boolean {
     return !isNaN(+value);
 }
 
-export const ExampleScreen = ({eventManager}: {eventManager: Emitter<Events>})=>{
-    const [value, setValue] = useState('')
-    const [value2, setValue2] = useState('')
-
+export const ExampleScreen = ({id}: {id: string})=>{
+    const {reset} = useReset(id)
     const handleValueChange = (val: string)=>{
-        setValue(val)
         if(!!val && isNumber(val)){
-            eventManager.emit('updateEnable',{num: parseInt(val)})
+            eventManager.emit('updateEnable',{ isEnabled: !isOdd(parseInt(val))})
         }
     }
 
@@ -26,11 +17,12 @@ export const ExampleScreen = ({eventManager}: {eventManager: Emitter<Events>})=>
     return <div>
         <div>
             <span>insert odd number to disable both inputs</span>
-            <ModuleComponent value={value} onChange={handleValueChange}/>
+            <ModuleComponentInput id={id}  onChange={handleValueChange}/>
         </div>
         <div>
-            <span>insert anything</span>
-           <ModuleComponent value={value2} onChange={setValue2}/>
+           <button onClick={()=>{
+                reset()
+           }}>reset</button>
         </div>
     </div>
 }
